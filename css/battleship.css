@@ -1,0 +1,37 @@
+div#board {
+	position: relative;
+	margin: auto;
+	background-color: #bbbbbb;
+}
+div#messageArea {
+	position: absolute;
+	top: 0px;
+	background-color: #DDEEFF;
+	padding: 5px 10px 5px 10px;
+}
+ #player {
+ 	border-spacing: 0px; 
+	position: absolute;
+	left: 170px;
+	top: 90px;
+}
+td {
+	width: 30px;
+	height: 30px;
+	border: 1px solid #239EE0;
+}
+
+#computer {
+	border-spacing: 0px; 
+	float: right;
+	position: absolute;
+	left: 600px;
+	top: 90px;
+}
+
+.hit {
+	background-color: #00ffff;
+}
+.miss {
+	background-color: #ff0000;
+}
