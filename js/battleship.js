@@ -4,9 +4,18 @@ var view = {
 		messageArea.innerHTML = msg;
 	},
 	displayHit: function (location) {
-		// body...
+		var cell = document.getElementById(location);
+		cell.setAttribute("class", "hit");
 	},
-	displayMiss: function (argument) {
-		// body...
+	displayMiss: function (location) {
+		var cell = document.getElementById(location);
+		cell.setAttribute("class", "miss");
 	}
-}
+};
+
+view.displayMiss("000");
+view.displayHit("034");
+view.displayMiss("055");
+view.displayHit("012");
+view.displayMiss("025");
+view.displayHit("026");
