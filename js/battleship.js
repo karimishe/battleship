@@ -39,16 +39,16 @@ var model = {
 			 { shipLength: 1, side: "player", locations: ["65"], hits: [""] },
 			 { shipLength: 1, side: "player", locations: ["99"], hits: [""] },
 			 { shipLength: 1, side: "player", locations: ["79"], hits: [""] },
-			 { shipLength: 4, side: "computer", locations: ["106", "116", "126","136"], hits: ["", "", "", ""]},
-			 { shipLength: 3, side: "computer", locations: ["124", "134", "144"], hits: ["", "", ""] },
-			 { shipLength: 3, side: "computer", locations: ["124", "134", "144"], hits: ["", "", ""] },
+			 { shipLength: 4, side: "computer", locations: ["100", "101", "102","103"], hits: ["", "", "", ""]},
+			 { shipLength: 3, side: "computer", locations: ["106", "107", "108"], hits: ["", "", ""] },
+			 { shipLength: 3, side: "computer", locations: ["130", "131", "132"], hits: ["", "", ""] },
 			 { shipLength: 2, side: "computer", locations: ["124", "134"], hits: ["", ""] },
-			 { shipLength: 2, side: "computer", locations: ["124", "134"], hits: ["", ""] },
-			 { shipLength: 2, side: "computer", locations: ["124", "134"], hits: ["", ""] },
-			 { shipLength: 1, side: "computer", locations: ["124"], hits: [""] },
-			 { shipLength: 1, side: "computer", locations: ["124"], hits: [""] },
-			 { shipLength: 1, side: "computer", locations: ["124"], hits: [""] },
-			 { shipLength: 1, side: "computer", locations: ["124"], hits: [""] }
+			 { shipLength: 2, side: "computer", locations: ["136", "137"], hits: ["", ""] },
+			 { shipLength: 2, side: "computer", locations: ["163", "164"], hits: ["", ""] },
+			 { shipLength: 1, side: "computer", locations: ["184"], hits: [""] },
+			 { shipLength: 1, side: "computer", locations: ["186"], hits: [""] },
+			 { shipLength: 1, side: "computer", locations: ["199"], hits: [""] },
+			 { shipLength: 1, side: "computer", locations: ["190"], hits: [""] }
 			 ],
 
 	fire: function(guess) {
@@ -85,18 +85,35 @@ var model = {
 
 
 var controller = {
-	Guesses: {
+	guesses: {
 		player: 0,
 		computer: 0
 	},
-	
-	processGuess: function (guess) {
 
+	playerGuess:  function () {
+		var userTdElements = [];
+		for(var i=100; i < 200; i++){
+			document.getElementById(i).onclick =  function(eventObj){
+				controller.guesses.player++;
+				var hit = model.fire(eventObj.target.id);
+				if (hit && model.shipsSunk.computer === model.numShips/2) {
+					view.displayMessage("You sank all my battleships, in " + 
+						controller.guesses.player + " gueses");
+				}
+			}
+		} 
 	}
+
+	// processGuess: function (guess) {
+
+	// }
 
 }
 
-model.fire("06");
+
+window.onload = controller.playerGuess;
+
+/*model.fire("06");
 model.fire("16");
 model.fire("26");
 model.fire("36");
@@ -109,7 +126,7 @@ model.fire("34");
 model.fire("99");
 model.fire("89");
 
-
+*/
 
 
 // view.displayMiss("000");
