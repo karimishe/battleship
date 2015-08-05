@@ -63,6 +63,13 @@ var model = {
 				if (this.isSunk(ship)){
 					view.displayMessage("Oh, " + ship.side + "`s ship is dead!!!");
 					this.shipsSunk[ship.side]++;
+					if (ship.side == "player"){
+						controller.injured = false;
+					}
+				} else {
+					if (ship.side == "player"){
+						controller.injured = true;
+					}
 				}
 				return true;
 			}
@@ -89,9 +96,11 @@ var model = {
 var controller = {
 		playerShots: 0,
 		computerShots: [],
-		direction: 0,
+		direction: null,
+		choosenDirection: null,
 		injured: false,
-		lastHit: 1000,
+		injuredHits: [],
+		hit: -1,
 		expectLocation: {
 			direction1: [],
 			direction2: []
@@ -102,8 +111,8 @@ var controller = {
 		for(var i=100; i < 200; i++){
 			document.getElementById(i).onclick =  function(eventObj){
 				controller.playerShots++;
-				var hit = model.fire(eventObj.target.id);
-				if (!hit){
+				var playerHit = model.fire(eventObj.target.id);
+				if (!playerHit){
 					controller.computerGuess();
 				}
 				// if (hit && model.shipsSunk.computer === model.numShips/2) {
@@ -114,25 +123,34 @@ var controller = {
 		} 
 	},
 	computerGuess: function(){
-		var oldSunk = model.shipsSunk.computer;
-		var hit;
 
 		var getLocation = function() {
 			var shot;
 			do {
 				console.log("in getLocation "+ controller.injured + controller.direction);
-				if (controller.injured && controller.direction==0){
-					shot = controller.expectLocation.direction1[Math.floor(Math.random() * 2)];
-					if (controller.computerShots.indexOf(controller.expectLocation.direction1[0]) >= 0 ||
+				if (controller.injured && controller.direction != 1){
+					controller.direction=0;
+					shot = controller.expectLocation.direction1[Math.floor(Math.random() * controller.expectLocation.direction1.length)];
+					if (controller.computerShots.indexOf(controller.expectLocation.direction1[0]) >= 0 &&
 									 controller.computerShots.indexOf(controller.expectLocation.direction1[1]) >= 0) {
-						controller.direction=1;
+						if (controller.choosenDirection==0){
+							controller.hit = controller.injuredHits[0];
+						} else {
+							controller.direction=1;
+						}
 					}
 					// console.log(shot, controller.direction);
 				} else if (controller.injured && controller.direction==1){
-					shot = controller.expectLocation.direction2[Math.floor(Math.random() * 2)];
-					if (controller.computerShots.indexOf(controller.expectLocation.direction2[0]) >= 0 ||
+					shot = controller.expectLocation.direction2[Math.floor(Math.random() * controller.expectLocation.direction2.length)];
+					if (controller.computerShots.indexOf(controller.expectLocation.direction2[0]) >= 0 &&
 									 controller.computerShots.indexOf(controller.expectLocation.direction2[1]) >= 0) {
-						controller.direction=0;
+						if (controller.choosenDirection==1){
+							controller.hit = controller.injuredHits[0];
+							break;
+						} else {
+							controller.direction=0;
+						}
+
 					}
 				} else {
 					shot = Math.floor(Math.random() * 100);
@@ -146,10 +164,10 @@ var controller = {
 
 
 		while (model.fire(hit = getLocation())) {
-			console.log("model.shipsSunk.computer, oldSunk " + model.shipsSunk.computer, oldSunk);
-
-			if (!(model.shipsSunk.computer - oldSunk)) {
-				this.injured = true;
+			console.log("this.injured " + this.injured);
+			this.injuredHits.push(hit);
+			this.choosenDirection = this.direction;
+			if (this.injured) {
 				hit = Number(hit);
 				if (((hit%10 == 0) && (hit-10 >= 0)) || hit==0 || hit == 90){
 					this.expectLocation.direction1 = [hit + 1];
@@ -169,11 +187,16 @@ var controller = {
 
 				console.log(this.expectLocation, this.direction);
 			} else {
-				this.injured = false;
-				hit=-1
-			}
-
-		};
+				this.injuredHits = [];
+				this.choosenDirection = null;
+				this.direction = null;
+				this.expectLocation = {
+					direction1: [],
+					direction2: []
+				}
+			};
+		console.log(this.expectLocation, this.direction);
+		}
 		console.log(this.expectLocation, this.direction);
 		controller.playerGuess();
 
