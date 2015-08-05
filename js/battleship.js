@@ -29,7 +29,7 @@ var model = {
 		singleDecker: 1
 	},*/
 
-	ships:  [{ shipLength: 4, side: "player", locations: ["06", "16", "26","36"], hits: ["", "", "", ""]},
+	ships:  [{ shipLength: 4, side: "player", locations: ["6", "16", "26","36"], hits: ["", "", "", ""]},
 			 { shipLength: 3, side: "player", locations: ["24", "34", "44"], hits: ["", "", ""] },
 			 { shipLength: 3, side: "player", locations: ["00", "01", "02"], hits: ["", "", ""] },
 			 { shipLength: 2, side: "player", locations: ["20", "21"], hits: ["", ""] },
@@ -55,6 +55,7 @@ var model = {
 		for (var i = 0; i < this.numShips; i++){
 			var ship = this.ships[i];
 			var index = ship.locations.indexOf(guess);
+			console.log(guess, ship.locations.indexOf(guess));
 			if (index >= 0) {
 				ship.hits[index] = "hit";
 				view.displayHit(guess);
@@ -84,24 +85,45 @@ var model = {
 };
 
 
+
 var controller = {
-	guesses: {
-		player: 0,
-		computer: 0
-	},
+		playerShots: 0,
+		computerShots: [],
+
+
+
 
 	playerGuess:  function () {
 		var userTdElements = [];
 		for(var i=100; i < 200; i++){
 			document.getElementById(i).onclick =  function(eventObj){
-				controller.guesses.player++;
+				controller.playerShots++;
 				var hit = model.fire(eventObj.target.id);
-				if (hit && model.shipsSunk.computer === model.numShips/2) {
-					view.displayMessage("You sank all my battleships, in " + 
-						controller.guesses.player + " gueses");
+				if (!hit){
+					controller.computerGuess();
 				}
+				// if (hit && model.shipsSunk.computer === model.numShips/2) {
+				// 	view.displayMessage("You sank all my battleships, in " + 
+				// 		controller.guesses.player + " gueses");
+				// }
 			}
 		} 
+	},
+	computerGuess: function(){
+
+		var getLocation = function() {
+			do {
+				var shot = Math.floor(Math.random() * 100);
+			} while (controller.computerShots.indexOf(shot) >= 0);
+			controller.computerShots.push(shot);
+			return shot + "";
+
+		};
+
+		while (model.fire(getLocation())) {};
+
+		controller.playerGuess();
+
 	}
 
 	// processGuess: function (guess) {
