@@ -85,7 +85,15 @@ var model = {
 
 
 var controller = {
+	Guesses: {
+		player: 0,
+		computer: 0
+	},
 	
+	processGuess: function (guess) {
+
+	}
+
 }
 
 model.fire("06");
