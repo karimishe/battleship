@@ -89,9 +89,13 @@ var model = {
 var controller = {
 		playerShots: 0,
 		computerShots: [],
-
-
-
+		direction: 0,
+		injured: false,
+		lastHit: 1000,
+		expectLocation: {
+			direction1: [],
+			direction2: []
+		},
 
 	playerGuess:  function () {
 		var userTdElements = [];
@@ -110,18 +114,67 @@ var controller = {
 		} 
 	},
 	computerGuess: function(){
+		var oldSunk = model.shipsSunk.computer;
+		var hit;
 
 		var getLocation = function() {
+			var shot;
 			do {
-				var shot = Math.floor(Math.random() * 100);
+				console.log("in getLocation "+ controller.injured + controller.direction);
+				if (controller.injured && controller.direction==0){
+					shot = controller.expectLocation.direction1[Math.floor(Math.random() * 2)];
+					if (controller.computerShots.indexOf(controller.expectLocation.direction1[0]) >= 0 ||
+									 controller.computerShots.indexOf(controller.expectLocation.direction1[1]) >= 0) {
+						controller.direction=1;
+					}
+					// console.log(shot, controller.direction);
+				} else if (controller.injured && controller.direction==1){
+					shot = controller.expectLocation.direction2[Math.floor(Math.random() * 2)];
+					if (controller.computerShots.indexOf(controller.expectLocation.direction2[0]) >= 0 ||
+									 controller.computerShots.indexOf(controller.expectLocation.direction2[1]) >= 0) {
+						controller.direction=0;
+					}
+				} else {
+					shot = Math.floor(Math.random() * 100);
+				}
 			} while (controller.computerShots.indexOf(shot) >= 0);
 			controller.computerShots.push(shot);
 			return shot + "";
 
 		};
 
-		while (model.fire(getLocation())) {};
 
+
+		while (model.fire(hit = getLocation())) {
+			console.log("model.shipsSunk.computer, oldSunk " + model.shipsSunk.computer, oldSunk);
+
+			if (!(model.shipsSunk.computer - oldSunk)) {
+				this.injured = true;
+				hit = Number(hit);
+				if (((hit%10 == 0) && (hit-10 >= 0)) || hit==0 || hit == 90){
+					this.expectLocation.direction1 = [hit + 1];
+				} else if ((hit%10==9) || hit == 09) {
+					this.expectLocation.direction1 = [hit-1];
+				} else {
+					this.expectLocation.direction1 = [hit + 1, hit-1];
+				}
+
+				if (hit - 10 < 0){
+					this.expectLocation.direction2 = [hit + 10]
+				} else if (hit/10 >= 9) {
+					this.expectLocation.direction2 = [hit-10]
+				} else {
+					this.expectLocation.direction2 = [hit-10, hit + 10]
+				}
+
+				console.log(this.expectLocation, this.direction);
+			} else {
+				this.injured = false;
+				hit=-1
+			}
+
+		};
+		console.log(this.expectLocation, this.direction);
 		controller.playerGuess();
 
 	}
