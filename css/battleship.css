@@ -1,7 +1,7 @@
 div#board {
 	position: relative;
 	margin: auto;
-	background-color: #bbbbbb;
+/*	background-color: #bbbbbb;*/
 }
 div#messageArea {
 	position: absolute;
@@ -20,6 +20,10 @@ td {
 	height: 30px;
 	border: 1px solid #239EE0;
 }
+.numbers, .letter{
+	text-align: center;
+	border: 0px;
+}
 
 #computer {
 	border-spacing: 0px; 
@@ -30,8 +34,8 @@ td {
 }
 
 .hit {
-	background-color: #00ffff;
+	background-color: #ff0000;
 }
 .miss {
-	background-color: #ff0000;
+	background-color: #00ffff;
 }
