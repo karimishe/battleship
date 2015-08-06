@@ -1,18 +1,12 @@
-div#board {
+body {
 	position: relative;
-	margin: auto;
-/*	background-color: #bbbbbb;*/
+	background-color: #030703;
 }
-div#messageArea {
-	position: absolute;
-	top: 0px;
-	background-color: #DDEEFF;
-	padding: 5px 10px 5px 10px;
-}
+
  #player {
  	border-spacing: 0px; 
 	position: absolute;
-	left: 170px;
+	left: 50px;
 	top: 90px;
 }
 td {
@@ -23,13 +17,14 @@ td {
 .numbers, .letter{
 	text-align: center;
 	border: 0px;
+	color: #239EE0;
 }
 
 #computer {
 	border-spacing: 0px; 
 	float: right;
 	position: absolute;
-	left: 600px;
+	left: 450px;
 	top: 90px;
 }
 
@@ -38,4 +33,94 @@ td {
 }
 .miss {
 	background-color: #00ffff;
+}
+
+div#messageArea {
+	position: absolute;
+	top: 0px;
+	left: 150px;
+	height: 70px;
+	width: 600px;
+	background-color: #0E1C2B;
+	padding: 5px 10px 5px 10px;
+	font-size: 150%;
+	color: #239EE0;
+}
+.message {
+	background-color: #001A00;
+	position: absolute;
+	top: 80px;
+	left: 150px;
+	height: 400px;
+	width: 700px;
+	padding: 20px 20px 20px 20px;
+	font-size: 150%;
+	text-align: center;
+	box-shadow: -10px 10px 5px 0px #001000;
+	color: #00dd00;
+}
+
+.display-none {
+	display: none;
+
+}
+.myButton {
+
+	background-color:#00dd00;
+	border-radius:9px;
+	border:5px solid #45d653;
+	display:inline-block;
+	cursor:pointer;
+	color:#101a12;
+	font-family:Verdana;
+	font-size:28px;
+	padding:30px 60px;
+	text-decoration:none;
+	text-shadow:0px 0px 50px #040803;
+	margin: 50px;
+}
+.myButton:hover {
+	background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #00dd00), color-stop(1, #00dd00));
+	background:-moz-linear-gradient(top, #00dd00 5%, #00dd00 100%);
+	background:-webkit-linear-gradient(top, #00dd00 5%, #00dd00 100%);
+	background:-o-linear-gradient(top, #00dd00 5%, #00dd00 100%);
+	background:-ms-linear-gradient(top, #00dd00 5%, #00dd00 100%);
+	background:linear-gradient(to bottom, #00dd00 5%, #00dd00 100%);
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#00dd00', endColorstr='#00dd00',GradientType=0);
+	background-color:#00dd00;
+}
+.myButton:active {
+	position:relative;
+	top:1px;
+}
+
+#css-input { 
+	margin-top: 80px;
+	padding:5px;
+	font-size:30px;
+	text-align:left;
+	border-width:2px;
+	border-radius:0px;
+	border-style:inset;
+	background-color:#00dd00;
+	border-color:#00dd00;
+	box-shadow: -2px 5px 2px 0px rgba(0,16,0,.76);
+	text-shadow:-4px 0px 10px rgba(42,42,42,.96);
+	font-weight:normal; font-style:none; font-family:sans-serif; 
+}#css-input:focus { outline:none; } 
+
+#player-name {
+	position: absolute;
+	left: 50px;
+	top: 500px;
+	color: #239EE0;
+}
+#wopr {
+	position: absolute;
+	left: 750px;
+	top: 500px;
+	color: #239EE0;
+}
+.whos-turn {
+	text-shadow:0px 0px 10px #239EE0;
 }
