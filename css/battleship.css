@@ -47,7 +47,7 @@ div#messageArea {
 	color: #239EE0;
 }
 .message {
-	background-color: #001A00;
+	background-color: #000033;
 	position: absolute;
 	top: 80px;
 	left: 150px;
@@ -56,8 +56,9 @@ div#messageArea {
 	padding: 20px 20px 20px 20px;
 	font-size: 150%;
 	text-align: center;
-	box-shadow: -10px 10px 5px 0px #001000;
-	color: #00dd00;
+	box-shadow: 0px 10px 25px 15px #000033;
+	color: #239EE0;
+	text-shadow:0px 0px 10px #239EE0;
 }
 
 .display-none {
@@ -66,9 +67,9 @@ div#messageArea {
 }
 .myButton {
 
-	background-color:#00dd00;
+	background-color:#39EAF7;
 	border-radius:9px;
-	border:5px solid #45d653;
+	border:5px solid #39EAF7;
 	display:inline-block;
 	cursor:pointer;
 	color:#101a12;
@@ -78,16 +79,17 @@ div#messageArea {
 	text-decoration:none;
 	text-shadow:0px 0px 50px #040803;
 	margin: 50px;
+	box-shadow: 0px 5px 15px 10px #39EAF7;
 }
 .myButton:hover {
-	background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #00dd00), color-stop(1, #00dd00));
-	background:-moz-linear-gradient(top, #00dd00 5%, #00dd00 100%);
-	background:-webkit-linear-gradient(top, #00dd00 5%, #00dd00 100%);
-	background:-o-linear-gradient(top, #00dd00 5%, #00dd00 100%);
-	background:-ms-linear-gradient(top, #00dd00 5%, #00dd00 100%);
-	background:linear-gradient(to bottom, #00dd00 5%, #00dd00 100%);
-	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#00dd00', endColorstr='#00dd00',GradientType=0);
-	background-color:#00dd00;
+	background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #239EE0), color-stop(1, #239EE0));
+	background:-moz-linear-gradient(top, #239EE0 5%, #239EE0 100%);
+	background:-webkit-linear-gradient(top, #239EE0 5%, #239EE0 100%);
+	background:-o-linear-gradient(top, #239EE0 5%, #239EE0 100%);
+	background:-ms-linear-gradient(top, #239EE0 5%, #239EE0 100%);
+	background:linear-gradient(to bottom, #239EE0 5%, #239EE0 100%);
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#239EE0', endColorstr='#239EE0',GradientType=0);
+	background-color:#239EE0;
 }
 .myButton:active {
 	position:relative;
@@ -102,8 +104,8 @@ div#messageArea {
 	border-width:2px;
 	border-radius:0px;
 	border-style:inset;
-	background-color:#00dd00;
-	border-color:#00dd00;
+	background-color:#239EE0;
+	border-color:#239EE0;
 	box-shadow: -2px 5px 2px 0px rgba(0,16,0,.76);
 	text-shadow:-4px 0px 10px rgba(42,42,42,.96);
 	font-weight:normal; font-style:none; font-family:sans-serif; 
