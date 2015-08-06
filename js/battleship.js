@@ -1,7 +1,3 @@
-function capitalizeFirstLetter(string) {
-    return string.charAt(0).toUpperCase() + string.slice(1);
-}
-
 var view = {
 	displayMessage: function (msg) {
 		var messageArea = document.getElementById('messageArea');
@@ -33,16 +29,16 @@ var model = {
 		singleDecker: 1
 	},*/
 
-	ships:  [{ shipLength: 4, side: "player", locations: ["6", "16", "26","36"], hits: ["", "", "", ""]},
-			 { shipLength: 3, side: "player", locations: ["24", "34", "44"], hits: ["", "", ""] },
-			 { shipLength: 3, side: "player", locations: ["0", "1", "2"], hits: ["", "", ""] },
-			 { shipLength: 2, side: "player", locations: ["20", "21"], hits: ["", ""] },
-			 { shipLength: 2, side: "player", locations: ["41", "42"], hits: ["", ""] },
-			 { shipLength: 2, side: "player", locations: ["60", "61"], hits: ["", ""] },
-			 { shipLength: 1, side: "player", locations: ["63"], hits: [""] },
-			 { shipLength: 1, side: "player", locations: ["65"], hits: [""] },
-			 { shipLength: 1, side: "player", locations: ["99"], hits: [""] },
-			 { shipLength: 1, side: "player", locations: ["79"], hits: [""] },
+	ships:  [{ shipLength: 4, side: "player", locations: ["200", "201", "202","203"], hits: ["", "", "", ""]},
+			 { shipLength: 3, side: "player", locations: ["224", "234", "244"], hits: ["", "", ""] },
+			 { shipLength: 3, side: "player", locations: ["206", "216", "226"], hits: ["", "", ""] },
+			 { shipLength: 2, side: "player", locations: ["220", "221"], hits: ["", ""] },
+			 { shipLength: 2, side: "player", locations: ["241", "242"], hits: ["", ""] },
+			 { shipLength: 2, side: "player", locations: ["260", "261"], hits: ["", ""] },
+			 { shipLength: 1, side: "player", locations: ["263"], hits: [""] },
+			 { shipLength: 1, side: "player", locations: ["265"], hits: [""] },
+			 { shipLength: 1, side: "player", locations: ["299"], hits: [""] },
+			 { shipLength: 1, side: "player", locations: ["279"], hits: [""] },
 			 { shipLength: 4, side: "computer", locations: ["100", "101", "102","103"], hits: ["", "", "", ""]},
 			 { shipLength: 3, side: "computer", locations: ["106", "107", "108"], hits: ["", "", ""] },
 			 { shipLength: 3, side: "computer", locations: ["130", "131", "132"], hits: ["", "", ""] },
@@ -179,7 +175,7 @@ var controller = {
 						} 
 					}
 				} else {
-					shot = Math.floor(Math.random() * 100);
+					shot = Math.floor(Math.random() * 100 + 200);
 				}
 			} while (controller.computerShots.indexOf(shot) >= 0);
 			controller.computerShots.push(shot);
@@ -190,7 +186,6 @@ var controller = {
 
 		
 		while (model.fire(hit = getLocation())) {
-
 			console.log("controller.injured " + controller.injured);
 			if (hit == (-1)){
 				hit = controller.injuredHits[switcher++];
@@ -199,17 +194,17 @@ var controller = {
 			if (controller.injured) {
 				controller.injuredHits.push(hit);
 				hit = Number(hit);
-				if (((hit%10 == 0) && (hit-10 >= 0)) || hit==0 || hit == 90){
+				if (hit%10 == 0) {
 					controller.expectLocation.direction1 = [hit + 1];
-				} else if ((hit%10==9) || hit == 09) {
+				} else if (hit%10==9) {
 					controller.expectLocation.direction1 = [hit-1];
 				} else {
 					controller.expectLocation.direction1 = [hit + 1, hit-1];
 				}
 
-				if (hit - 10 < 0){
+				if (hit - 210 < 0){
 					controller.expectLocation.direction2 = [hit + 10]
-				} else if (hit/10 >= 9) {
+				} else if (hit >= 290) {
 					controller.expectLocation.direction2 = [hit-10]
 				} else {
 					controller.expectLocation.direction2 = [hit-10, hit + 10]
