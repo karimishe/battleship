@@ -225,11 +225,13 @@ gameElements = {
 	 finishGameDiv: document.getElementById("finish-game"),
 	 playerName: document.getElementById("player-name"),
 	 inputName: document.getElementById("css-input"),
-	 woprName: document.getElementById("wopr")
+	 woprName: document.getElementById("wopr"),
+	 snd: new Audio("sounds/playgame.wav")
 }
 
 function startGame () {
 //		gameElements.startGameDiv.className = "message";
+	gameElements.snd.play();
 	document.getElementById("yes").onclick = function () {
 		gameElements.startGameDiv.className = gameElements.startGameDiv.className + " display-none";
 		gameElements.initGameDiv.className = "message";
