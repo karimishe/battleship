@@ -1,3 +1,7 @@
+function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
 var view = {
 	displayMessage: function (msg) {
 		var messageArea = document.getElementById('messageArea');
@@ -31,7 +35,7 @@ var model = {
 
 	ships:  [{ shipLength: 4, side: "player", locations: ["6", "16", "26","36"], hits: ["", "", "", ""]},
 			 { shipLength: 3, side: "player", locations: ["24", "34", "44"], hits: ["", "", ""] },
-			 { shipLength: 3, side: "player", locations: ["00", "01", "02"], hits: ["", "", ""] },
+			 { shipLength: 3, side: "player", locations: ["0", "1", "2"], hits: ["", "", ""] },
 			 { shipLength: 2, side: "player", locations: ["20", "21"], hits: ["", ""] },
 			 { shipLength: 2, side: "player", locations: ["41", "42"], hits: ["", ""] },
 			 { shipLength: 2, side: "player", locations: ["60", "61"], hits: ["", ""] },
@@ -63,6 +67,9 @@ var model = {
 				if (this.isSunk(ship)){
 					view.displayMessage("Oh, " + ship.side + "`s ship is dead!!!");
 					this.shipsSunk[ship.side]++;
+					if (this.shipsSunk[ship.side] == 10) {
+						finishGame(ship.side);
+					}
 					if (ship.side == "player"){
 						controller.injured = false;
 					}
@@ -88,7 +95,6 @@ var model = {
 		}
 		return true;
 	}
-
 };
 
 
@@ -107,13 +113,17 @@ var controller = {
 		},
 
 	playerGuess:  function () {
+		gameElements.playerName.className = "whos-turn";
+		gameElements.woprName.className = "name";
 		var userTdElements = [];
 		for(var i=100; i < 200; i++){
 			document.getElementById(i).onclick =  function(eventObj){
 				controller.playerShots++;
 				var playerHit = model.fire(eventObj.target.id);
 				if (!playerHit){
-					controller.computerGuess();
+					gameElements.playerName.className = "name";
+					gameElements.woprName.className = "whos-turn";
+					window.setTimeout(controller.computerGuess, 1000);
 				}
 				// if (hit && model.shipsSunk.computer === model.numShips/2) {
 				// 	view.displayMessage("You sank all my battleships, in " + 
@@ -164,40 +174,40 @@ var controller = {
 
 
 		while (model.fire(hit = getLocation())) {
-			console.log("this.injured " + this.injured);
-			this.injuredHits.push(hit);
-			this.choosenDirection = this.direction;
-			if (this.injured) {
+			console.log("controller.injured " + controller.injured);
+			controller.injuredHits.push(hit);
+			controller.choosenDirection = controller.direction;
+			if (controller.injured) {
 				hit = Number(hit);
 				if (((hit%10 == 0) && (hit-10 >= 0)) || hit==0 || hit == 90){
-					this.expectLocation.direction1 = [hit + 1];
+					controller.expectLocation.direction1 = [hit + 1];
 				} else if ((hit%10==9) || hit == 09) {
-					this.expectLocation.direction1 = [hit-1];
+					controller.expectLocation.direction1 = [hit-1];
 				} else {
-					this.expectLocation.direction1 = [hit + 1, hit-1];
+					controller.expectLocation.direction1 = [hit + 1, hit-1];
 				}
 
 				if (hit - 10 < 0){
-					this.expectLocation.direction2 = [hit + 10]
+					controller.expectLocation.direction2 = [hit + 10]
 				} else if (hit/10 >= 9) {
-					this.expectLocation.direction2 = [hit-10]
+					controller.expectLocation.direction2 = [hit-10]
 				} else {
-					this.expectLocation.direction2 = [hit-10, hit + 10]
+					controller.expectLocation.direction2 = [hit-10, hit + 10]
 				}
 
-				console.log(this.expectLocation, this.direction);
+				console.log(controller.expectLocation, controller.direction);
 			} else {
-				this.injuredHits = [];
-				this.choosenDirection = null;
-				this.direction = null;
-				this.expectLocation = {
+				controller.injuredHits = [];
+				controller.choosenDirection = null;
+				controller.direction = null;
+				controller.expectLocation = {
 					direction1: [],
 					direction2: []
 				}
 			};
-		console.log(this.expectLocation, this.direction);
+		console.log(controller.expectLocation, controller.direction);
 		}
-		console.log(this.expectLocation, this.direction);
+		console.log(controller.expectLocation, controller.direction);
 		controller.playerGuess();
 
 	}
@@ -208,8 +218,52 @@ var controller = {
 
 }
 
+gameElements = {
+	 startGameDiv: document.getElementById("start-game"),
+	 initGameDiv: document.getElementById("init"),
+	 battlefield: document.getElementById("battlefield"),
+	 finishGameDiv: document.getElementById("finish-game"),
+	 playerName: document.getElementById("player-name"),
+	 inputName: document.getElementById("css-input"),
+	 woprName: document.getElementById("wopr")
+}
 
-window.onload = controller.playerGuess;
+function startGame () {
+//		gameElements.startGameDiv.className = "message";
+	document.getElementById("yes").onclick = function () {
+		gameElements.startGameDiv.className = gameElements.startGameDiv.className + " display-none";
+		gameElements.initGameDiv.className = "message";
+	}
+	gameElements.inputName.onkeypress = function(e){
+		if (e.keyCode===13){
+			gameElements.playerName.innerHTML = "<h2>"+gameElements.inputName.value+"</h2>";
+			gameElements.initGameDiv.className = gameElements.initGameDiv.className + " display-none";
+			gameElements.battlefield.className = "";
+			controller.playerGuess();
+		}
+	};
+}
+
+function finishGame(looser) {
+	endMessage = document.createElement("h1");
+	var okButton = document.getElementById("ok");
+	gameElements.battlefield.className = gameElements.battlefield.className + " display-none";	
+	gameElements.finishGameDiv.className = "message";
+	if (looser == "computer"){
+		endMessage.innerHTML = "YOU WIN!"	
+	} else {
+		endMessage.innerHTML = "YOU LOOSE!"	
+
+	};
+	gameElements.finishGameDiv.insertBefore(endMessage, okButton);	
+	okButton.onclick = function () {
+		window.location.reload();
+	};
+	
+}
+
+window.onload = startGame;
+// window.onload = controller.playerGuess;
 
 /*model.fire("06");
 model.fire("16");
