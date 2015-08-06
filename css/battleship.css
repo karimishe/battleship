@@ -106,7 +106,7 @@ div#messageArea {
 	border-style:inset;
 	background-color:#239EE0;
 	border-color:#239EE0;
-	box-shadow: -2px 5px 2px 0px rgba(0,16,0,.76);
+	box-shadow: -2px 5px 2px 0px rgba(0,0,16,.76);
 	text-shadow:-4px 0px 10px rgba(42,42,42,.96);
 	font-weight:normal; font-style:none; font-family:sans-serif; 
 }#css-input:focus { outline:none; } 
