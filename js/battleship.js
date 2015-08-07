@@ -9,6 +9,9 @@ var view = {
 		cell.setAttribute("class", "hit");
 	},
 	displayMiss: function (location) {
+		if (model.gameOver){
+			return false;
+		}
 		var cell = document.getElementById(location);
 		cell.setAttribute("class", "miss");
 	}
@@ -16,6 +19,8 @@ var view = {
 
 var model = {
 	boardSize: 10,
+	playerShipCells: [],
+	computerShipCells: [],
 	numShips: {
 		player: 10,
 		computer: 10
@@ -24,6 +29,7 @@ var model = {
 		player: 0,
 		computer: 0
 	},
+	gameOver: false,
 
 	ships: { player: [{ shipLength: 4, side: "player", locations: [0, 0, 0,0], hits: ["", "", "", ""]},
 			 		  { shipLength: 3, side: "player", locations: [0, 0, 0], hits: ["", "", ""] },
@@ -62,7 +68,7 @@ var model = {
 				view.displayHit(guess);
 				view.displayMessage("HIT!!!");
 				if (this.isSunk(ship)){
-					view.displayMessage("Oh, " + ship.side + "`s ship is dead!!!");
+					view.displayMessage("You sunk my battleship");
 					this.shipsSunk[ship.side]++;
 					if (this.shipsSunk[ship.side] == 10) {
 						finishGame(ship.side);
@@ -80,7 +86,7 @@ var model = {
 
 		}
 		view.displayMiss(guess);
-		view.displayMessage("Ha, ha! Missed me!!!");
+		view.displayMessage("You Missed ");
 		return false;
 	},
 
@@ -109,17 +115,20 @@ var model = {
 			for (j = 0; j < sideLocations[i].length; j++)
 				sideCells.push(sideLocations[i][j]);
 
-		console.log("Ships array: ");
-		console.log(this.ships);
-		console.log(sideLocations);
-		console.log(sideCells);
+		if (shipsSide == "player") {
 
-		if (shipsSide=="player"){
-			for(var k = 0; k < sideCells.length; k++){
-				playerCell = document.getElementById(sideCells[k]);
+			for (var i = 0; i < sideCells.length; i++) {
+				playerCell = document.getElementById(sideCells[i]);
 				playerCell.className = "visible";
+				this.playerShipCells.push(playerCell);
 			};
-		};
+
+		} else {
+			for (var i = 0; i < sideCells.length; i++) {
+				computerCell = document.getElementById(sideCells[i]);
+				this.computerShipCells.push(computerCell);
+			}
+		}
 	},
 
 	generateShip: function(shipIndex, shipsSide) {
@@ -186,7 +195,9 @@ var controller = {
 		for(var i=100; i < 200; i++){
 			document.getElementById(i).onclick =  function(eventObj){
 				var currentPlayerShot =  eventObj.target.id;
-
+				if (model.gameOver){
+					return false;
+				}
 				if (controller.playerShots.indexOf(currentPlayerShot) >= 0) {
 						view.displayMessage("You alredy shot there!");
 						return false;
@@ -243,11 +254,8 @@ var controller = {
 			} while (controller.computerShots.indexOf(shot) >= 0);
 			controller.computerShots.push(shot);
 			return shot + "";
-
 		};
 
-
-		
 		while (model.fire(hit = getLocation(), "player")) {
 			console.log("controller.injured " + controller.injured);
 			if (hit == (-1)){
@@ -264,7 +272,6 @@ var controller = {
 				} else {
 					controller.expectLocation.direction1 = [hit + 1, hit-1];
 				}
-
 				if (hit - 210 < 0){
 					controller.expectLocation.direction2 = [hit + 10]
 				} else if (hit >= 290) {
@@ -284,20 +291,16 @@ var controller = {
 					direction2: []
 				}
 			};
-		console.log(controller.expectLocation, controller.direction);
 		}
-		console.log(controller.expectLocation, controller.direction);
 		controller.playerGuess();
 
 	}
 
-	// processGuess: function (guess) {
-
-	// }
-
 }
 
-gameElements = {
+
+var gameElements = {
+	 resetButton: document.getElementById("reset"),
 	 startGameDiv: document.getElementById("start-game"),
 	 initGameDiv: document.getElementById("init"),
 	 battlefield: document.getElementById("battlefield"),
@@ -314,6 +317,7 @@ gameElements = {
 function startGame () {
 //		gameElements.startGameDiv.className = "message";
 	gameElements.askingSound.play();
+	model.gameOver = false;
 	model.generateShipLocations("computer");
 	model.generateShipLocations("player");
 	document.getElementById("yes").onclick = function () {
@@ -337,46 +341,35 @@ function startGame () {
 }
 
 function finishGame(looser) {
-	endMessage = document.createElement("h1");
-	var okButton = document.getElementById("ok");
-	gameElements.battlefield.className = gameElements.battlefield.className + " display-none";	
-	gameElements.finishGameDiv.className = "message";
-	if (looser == "computer"){
-		endMessage.innerHTML = "YOU WIN!"	
+	model.gameOver = true;
+	if (looser=="player"){
+		view.displayMessage("You loose");
 	} else {
-		endMessage.innerHTML = "YOU LOOSE!"	
+		view.displayMessage("You win!");
+	}
 
+	// var tdCells = [];
+	for (var i = 100 ; i < 300; i++) {
+	 document.getElementById(i + "").className="";
+
+	}
+/*	var misses = document.getElementsByClassName("miss");
+	for (var i = 0 ; i < misses.length; i++){
+		misses[i].className = "cell";
+	};*/
+
+	for (var i = 0; i < model.playerShipCells.length; i++){
+		model.playerShipCells[i].className = "visible";
 	};
-	gameElements.finishGameDiv.insertBefore(endMessage, okButton);	
-	okButton.onclick = function () {
-		window.location.reload();
+
+	for (var i = 0; i < model.computerShipCells.length; i++){
+		model.computerShipCells[i].className = "visible";
 	};
-	
+	gameElements.resetButton.style.display = "block";
+
+	gameElements.resetButton.onclick = function() {
+			window.location.reload();
+		}
 }
 
 window.onload = startGame;
-// window.onload = controller.playerGuess;
-
-/*model.fire("06");
-model.fire("16");
-model.fire("26");
-model.fire("36");
-
-
-model.fire("24");
-model.fire("44");
-model.fire("34");
-
-model.fire("99");
-model.fire("89");
-
-*/
-
-
-// view.displayMiss("000");
-// view.displayHit("034");
-// view.displayMiss("055");
-// view.displayHit("012");
-// view.displayMiss("025");
-// view.displayHit("026");
-// view.displayMessage("Tap tap, is this thing on?");
