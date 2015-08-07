@@ -43,9 +43,9 @@ div#messageArea {
 	left: 150px;
 	height: 70px;
 	width: 600px;
-	background-color: #0E1C2B;
+	background-color: #000033;
 	padding: 5px 10px 5px 10px;
-	font-size: 150%;
+	font-size: 200%;
 	color: #239EE0;
 }
 .message {
@@ -83,6 +83,7 @@ div#messageArea {
 	margin: 50px;
 	box-shadow: 0px 5px 10px 10px #39EAF7;
 }
+
 .myButton:hover {
 	box-shadow: 0px 5px 15px 10px #39EAF7;
 }
@@ -112,6 +113,18 @@ div#messageArea {
 	top: 500px;
 	color: #239EE0;
 }
+
+#reset {
+	position: absolute;
+	left: 400px;
+	top: 500px;
+	color: #239EE0;
+	display: none;
+}
+#reset:hover {
+	text-shadow:0px 0px 15px #239EE0;
+	cursor:pointer;
+}
 #wopr {
 	position: absolute;
 	left: 750px;
@@ -119,5 +132,5 @@ div#messageArea {
 	color: #239EE0;
 }
 .whos-turn {
-	text-shadow:0px 0px 10px #239EE0;
+	text-shadow:2px 0px 15px #239EE0;
 }
