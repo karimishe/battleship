@@ -1,9 +1,17 @@
+
+//Battleship game. 
+// You can find more information in readme.txt
+
+//this is view block (using mvc terms), responsible for displaying messages , hits and miss 
 var view = {
+	// displayMessage takes msg string to display it on a screen
 	displayMessage: function (msg) {
 		var messageArea = document.getElementById('messageArea');
 		messageArea.innerHTML = msg;
 		console.log(msg);
 	},
+	//displayHit and displayMiss takes location - string of numbers (for example "201"), 
+	//and marks cell on the boars (stylize table td)
 	displayHit: function (location) {
 		var cell = document.getElementById(location);
 		cell.setAttribute("class", "hit");
@@ -17,6 +25,7 @@ var view = {
 	}
 };
 
+//this is model block (using mvc terms), responsible for storing information about game
 var model = {
 	boardSize: 10,
 	playerShipCells: [],
@@ -25,11 +34,19 @@ var model = {
 		player: 10,
 		computer: 10
 	},
+	//counter ship that sunk
 	shipsSunk: {
 		player: 0,
 		computer: 0
 	},
 	gameOver: false,
+
+	//ships objects stores two objects: a player and a computer, this objects store information about ships
+	//shipLengh - how many cell takes the ship
+	// side - player side
+	// locations  stores an array of string of numbers (["222", "223", "224"]), these numbers - coordinates ship location
+	// through them you can access the table (td id-s)
+	//hits - stores array of two values: "" and "hit", hit indexes apropriate to location indexes.  hit elements reflect ship damage
 
 	ships: { player: [{ shipLength: 4, side: "player", locations: [0, 0, 0,0], hits: ["", "", "", ""]},
 			 		  { shipLength: 3, side: "player", locations: [0, 0, 0], hits: ["", "", ""] },
@@ -55,30 +72,33 @@ var model = {
 			 ]
 			},
 
+	//
+	//this function, takes guess - possible ship location coordinates, target - ship for attacking
+	//guess - string. ex.: "244" target - string, takes two values: "computer" and "playes" 
 	fire: function(guess, target) {
 		if (guess==(-1)){
 			return true;
 		}
-		for (var i = 0; i < this.numShips[target]; i++){
+		for (var i = 0; i < this.numShips[target]; i++){ //looking for all enemys ships 
 			var ship = this.ships[target][i];
 			var index = ship.locations.indexOf(guess);
-			console.log(guess, ship.locations.indexOf(guess));
+			 // check match guess (fire coordinates) with coordinates of the ship
 			if (index >= 0) {
-				ship.hits[index] = "hit";
+				ship.hits[index] = "hit"; 
 				view.displayHit(guess);
 				view.displayMessage("HIT!!!");
-				if (this.isSunk(ship)){
+				if (this.isSunk(ship)){//check if the ship is sunk
 					view.displayMessage("You sunk my battleship");
-					this.shipsSunk[ship.side]++;
+					this.shipsSunk[ship.side]++; 
 					if (this.shipsSunk[ship.side] == 10) {
-						finishGame(ship.side);
+						finishGame(ship.side);   //end of the game occurs when all ships dead
 					}
-					if (ship.side == "player"){
+					if (ship.side == "player"){ // if ship is sunk then take off "injured" mark (for AI)
 						controller.injured = false;
 					}
 				} else {
-					if (ship.side == "player"){
-						controller.injured = true;
+					if (ship.side == "player"){ // if ship is damaged, but not destroyed, then we put "injured" mark 
+						controller.injured = true; // for assumption of ship location
 					}
 				}
 				return true;
@@ -89,7 +109,7 @@ var model = {
 		view.displayMessage("You Missed ");
 		return false;
 	},
-
+	//cheks if ship is sunk
 	isSunk: function(ship) {
 		for (var i = 0; i < ship.shipLength; i++) {
 			if (ship.hits[i] !== "hit") {
@@ -98,7 +118,8 @@ var model = {
 		}
 		return true;
 	},
-
+	//generate random ship coordinates , takes arg. shipSide - string "player" or "computer" 
+	//to generate for appropriate player
 	generateShipLocations: function(shipsSide) {
 		var locations;
 		var sideLocations = [];
@@ -130,7 +151,10 @@ var model = {
 			}
 		}
 	},
-
+	//generates location for the ship
+	//shipIndex - index of the ship in ships object
+	//shipSide - "player" or "computer"
+	//return new ship coordinates
 	generateShip: function(shipIndex, shipsSide) {
 		var direction = Math.floor(Math.random() * 2);
 		var row, col;
@@ -153,7 +177,8 @@ var model = {
 		}
 		return newShipLocations;
 	},
-
+	//check that ships did not encounter
+	//locations - string of coordinates for new ship
 	collision: function(locations, shipsSide) {
 		for (var i = 0; i < this.numShips[shipsSide]; i++) {
 			var ship = this.ships[shipsSide][i];
@@ -173,7 +198,6 @@ var model = {
 };
 
 
-
 var controller = {
 		playerShots: [],
 		computerShots: [],
@@ -181,13 +205,12 @@ var controller = {
 		choosenDirection: -1,
 		injured: false,
 		injuredHits: [],
-		// switcher: 0,
-		// hit: -1,
 		expectLocation: {
 			direction1: [],
 			direction2: []
 		},
 
+		// playerGuess has event  listener onclick (click by player on the board cell) 
 	playerGuess:  function () {
 		gameElements.playerName.className = "whos-turn";
 		gameElements.woprName.className = "";
@@ -218,6 +241,9 @@ var controller = {
 			}
 		} 
 	},
+
+	//this is the most difficult part of programm, this is AI
+	//it remembers if the ship is injured and makes decisions where to fire
 	computerGuess: function(){
 		var switcher = 0;
 		var getLocation = function() {
@@ -297,8 +323,7 @@ var controller = {
 	}
 
 }
-
-
+//this object stores most using DOM elements
 var gameElements = {
 	 resetButton: document.getElementById("reset"),
 	 startGameDiv: document.getElementById("start-game"),
@@ -314,8 +339,9 @@ var gameElements = {
 	 askingSound: new Audio("sounds/playgame.wav")
 }
 
+//Entering point of the game with some dialog modal divs,
+//button listeners and input field for entering players name
 function startGame () {
-//		gameElements.startGameDiv.className = "message";
 	gameElements.askingSound.play();
 	model.gameOver = false;
 	model.generateShipLocations("computer");
@@ -339,7 +365,9 @@ function startGame () {
 		}
 	};
 }
-
+//end point of the game
+//shows open fields and reset button and 
+//says to you, who you are )))
 function finishGame(looser) {
 	model.gameOver = true;
 	if (looser=="player"){
@@ -347,16 +375,10 @@ function finishGame(looser) {
 	} else {
 		view.displayMessage("You win!");
 	}
-
-	// var tdCells = [];
 	for (var i = 100 ; i < 300; i++) {
 	 document.getElementById(i + "").className="";
 
 	}
-/*	var misses = document.getElementsByClassName("miss");
-	for (var i = 0 ; i < misses.length; i++){
-		misses[i].className = "cell";
-	};*/
 
 	for (var i = 0; i < model.playerShipCells.length; i++){
 		model.playerShipCells[i].className = "visible";
@@ -371,5 +393,6 @@ function finishGame(looser) {
 			window.location.reload();
 		}
 }
+
 
 window.onload = startGame;
