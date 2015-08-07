@@ -16,47 +16,45 @@ var view = {
 
 var model = {
 	boardSize: 10,
-	numShips: 20,
+	numShips: {
+		player: 10,
+		computer: 10
+	},
 	shipsSunk: {
 		player: 0,
 		computer: 0
 	},
 
-/*	shipLength: {
-		fourDecker: 4,
-		threeDecker: 3,
-		twoDecker: 2,
-		singleDecker: 1
-	},*/
+	ships: { player: [{ shipLength: 4, side: "player", locations: [0, 0, 0,0], hits: ["", "", "", ""]},
+			 		  { shipLength: 3, side: "player", locations: [0, 0, 0], hits: ["", "", ""] },
+			 		  { shipLength: 3, side: "player", locations: [0, 0, 0], hits: ["", "", ""] },
+			 		  { shipLength: 2, side: "player", locations: [0, 0], hits: ["", ""] },
+			 		  { shipLength: 2, side: "player", locations: [0, 0], hits: ["", ""] },
+			 		  { shipLength: 2, side: "player", locations: [0, 0], hits: ["", ""] },
+			 		  { shipLength: 1, side: "player", locations: [0], hits: [""] },
+			 		  { shipLength: 1, side: "player", locations: [0], hits: [""] },
+					  { shipLength: 1, side: "player", locations: [0], hits: [""] },
+			 		  { shipLength: 1, side: "player", locations: [0], hits: [""] }],
+			computer: [
+			 { shipLength: 4, side: "computer", locations: [0, 0, 0,0], hits: ["", "", "", ""]},
+			 { shipLength: 3, side: "computer", locations: [0, 0, 0], hits: ["", "", ""] },
+			 { shipLength: 3, side: "computer", locations: [0, 0, 0], hits: ["", "", ""] },
+			 { shipLength: 2, side: "computer", locations: [0, 0], hits: ["", ""] },
+			 { shipLength: 2, side: "computer", locations: [0, 0], hits: ["", ""] },
+			 { shipLength: 2, side: "computer", locations: [0, 0], hits: ["", ""] },
+			 { shipLength: 1, side: "computer", locations: [0], hits: [""] },
+			 { shipLength: 1, side: "computer", locations: [0], hits: [""] },
+			 { shipLength: 1, side: "computer", locations: [0], hits: [""] },
+			 { shipLength: 1, side: "computer", locations: [0], hits: [""] }
+			 ]
+			},
 
-	ships:  [{ shipLength: 4, side: "player", locations: ["200", "201", "202","203"], hits: ["", "", "", ""]},
-			 { shipLength: 3, side: "player", locations: ["224", "234", "244"], hits: ["", "", ""] },
-			 { shipLength: 3, side: "player", locations: ["206", "216", "226"], hits: ["", "", ""] },
-			 { shipLength: 2, side: "player", locations: ["220", "221"], hits: ["", ""] },
-			 { shipLength: 2, side: "player", locations: ["241", "242"], hits: ["", ""] },
-			 { shipLength: 2, side: "player", locations: ["260", "261"], hits: ["", ""] },
-			 { shipLength: 1, side: "player", locations: ["263"], hits: [""] },
-			 { shipLength: 1, side: "player", locations: ["265"], hits: [""] },
-			 { shipLength: 1, side: "player", locations: ["299"], hits: [""] },
-			 { shipLength: 1, side: "player", locations: ["279"], hits: [""] },
-			 { shipLength: 4, side: "computer", locations: ["100", "101", "102","103"], hits: ["", "", "", ""]},
-			 { shipLength: 3, side: "computer", locations: ["106", "107", "108"], hits: ["", "", ""] },
-			 { shipLength: 3, side: "computer", locations: ["130", "131", "132"], hits: ["", "", ""] },
-			 { shipLength: 2, side: "computer", locations: ["124", "134"], hits: ["", ""] },
-			 { shipLength: 2, side: "computer", locations: ["136", "137"], hits: ["", ""] },
-			 { shipLength: 2, side: "computer", locations: ["163", "164"], hits: ["", ""] },
-			 { shipLength: 1, side: "computer", locations: ["184"], hits: [""] },
-			 { shipLength: 1, side: "computer", locations: ["186"], hits: [""] },
-			 { shipLength: 1, side: "computer", locations: ["199"], hits: [""] },
-			 { shipLength: 1, side: "computer", locations: ["190"], hits: [""] }
-			 ],
-
-	fire: function(guess) {
+	fire: function(guess, target) {
 		if (guess==(-1)){
 			return true;
 		}
-		for (var i = 0; i < this.numShips; i++){
-			var ship = this.ships[i];
+		for (var i = 0; i < this.numShips[target]; i++){
+			var ship = this.ships[target][i];
 			var index = ship.locations.indexOf(guess);
 			console.log(guess, ship.locations.indexOf(guess));
 			if (index >= 0) {
@@ -93,6 +91,75 @@ var model = {
 			}
 		}
 		return true;
+	},
+
+	generateShipLocations: function(shipsSide) {
+		var locations;
+		var sideLocations = [];
+		var sideCells = [];
+		for (var i = 0; i < this.numShips[shipsSide]; i++) {
+			do {
+				locations = this.generateShip(i, shipsSide);
+			} while (this.collision(locations, shipsSide));
+			this.ships[shipsSide][i].locations = locations;
+			sideLocations.push(locations);
+		};
+
+		for (i = 0; i < sideLocations.length; i++)
+			for (j = 0; j < sideLocations[i].length; j++)
+				sideCells.push(sideLocations[i][j]);
+
+		console.log("Ships array: ");
+		console.log(this.ships);
+		console.log(sideLocations);
+		console.log(sideCells);
+
+		if (shipsSide=="player"){
+			for(var k = 0; k < sideCells.length; k++){
+				playerCell = document.getElementById(sideCells[k]);
+				playerCell.className = "visible";
+			};
+		};
+	},
+
+	generateShip: function(shipIndex, shipsSide) {
+		var direction = Math.floor(Math.random() * 2);
+		var row, col;
+
+		if (direction === 1) { // horizontal
+			row = Math.floor(Math.random() * this.boardSize);
+			col = Math.floor(Math.random() * (this.boardSize - this.ships[shipsSide][shipIndex].shipLength + 1));
+		} else { // vertical
+			row = Math.floor(Math.random() * (this.boardSize - this.ships[shipsSide][shipIndex].shipLength + 1));
+			col = Math.floor(Math.random() * this.boardSize);
+		}
+		var hundreds = (shipsSide=="computer") ? "1" : "2";
+		var newShipLocations = [];
+		for (var i = 0; i < this.ships[shipsSide][shipIndex].shipLength; i++) {
+			if (direction === 1) {
+				newShipLocations.push( hundreds + row + "" + (col + i));
+			} else {
+				newShipLocations.push(hundreds + (row + i) + "" + col);
+			}
+		}
+		return newShipLocations;
+	},
+
+	collision: function(locations, shipsSide) {
+		for (var i = 0; i < this.numShips[shipsSide]; i++) {
+			var ship = this.ships[shipsSide][i];
+			for (var j = 0; j < locations.length; j++) {
+
+				if ((ship.locations.indexOf(locations[j]) >= 0) || (ship.locations.indexOf("" + (Number(locations[j]) + 1)) >= 0) || 
+					(ship.locations.indexOf((locations[j] - 1) + "") >= 0) || (ship.locations.indexOf("" + (Number(locations[j]) + 10)) >= 0) || 
+					(ship.locations.indexOf((locations[j] - 10) + "") >= 0) || (ship.locations.indexOf("" + (Number(locations[j]) + 9)) >= 0 ) || 
+					(ship.locations.indexOf((locations[j] - 9) + "") >= 0 ) || (ship.locations.indexOf("" + (Number(locations[j]) + 11)) >= 0 ) || 
+					(ship.locations.indexOf((locations[j] - 11) + "") >= 0 )) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 };
 
@@ -131,16 +198,12 @@ var controller = {
 				}
 
 				controller.playerShots.push(currentPlayerShot);
-				var playerHit = model.fire(currentPlayerShot);
+				var playerHit = model.fire(currentPlayerShot, "computer");
 				if (!playerHit){
 					gameElements.playerName.className = "";
 					gameElements.woprName.className = "whos-turn";
 					window.setTimeout(controller.computerGuess, 500);
 				}
-				// if (hit && model.shipsSunk.computer === model.numShips/2) {
-				// 	view.displayMessage("You sank all my battleships, in " + 
-				// 		controller.guesses.player + " gueses");
-				// }
 			}
 		} 
 	},
@@ -185,7 +248,7 @@ var controller = {
 
 
 		
-		while (model.fire(hit = getLocation())) {
+		while (model.fire(hit = getLocation(), "player")) {
 			console.log("controller.injured " + controller.injured);
 			if (hit == (-1)){
 				hit = controller.injuredHits[switcher++];
@@ -248,6 +311,8 @@ gameElements = {
 function startGame () {
 //		gameElements.startGameDiv.className = "message";
 	gameElements.snd.play();
+	model.generateShipLocations("computer");
+	model.generateShipLocations("player");
 	document.getElementById("yes").onclick = function () {
 		gameElements.startGameDiv.className = gameElements.startGameDiv.className + " display-none";
 		gameElements.initGameDiv.className = "message";

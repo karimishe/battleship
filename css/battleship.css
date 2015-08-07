@@ -27,7 +27,9 @@ td {
 	left: 450px;
 	top: 90px;
 }
-
+.visible {
+	background-color: #00ff00;
+}
 .hit {
 	background-color: #ff0000;
 }
