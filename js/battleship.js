@@ -305,17 +305,26 @@ gameElements = {
 	 playerName: document.getElementById("player-name"),
 	 inputName: document.getElementById("css-input"),
 	 woprName: document.getElementById("wopr"),
-	 snd: new Audio("sounds/playgame.wav")
+	 fineDiv: document.getElementById("fine"),
+	 fineSound: new Audio("sounds/fine.wav"),
+	 excelentSound: new Audio("sounds/excelent.wav"),
+	 askingSound: new Audio("sounds/playgame.wav")
 }
 
 function startGame () {
 //		gameElements.startGameDiv.className = "message";
-	gameElements.snd.play();
+	gameElements.askingSound.play();
 	model.generateShipLocations("computer");
 	model.generateShipLocations("player");
 	document.getElementById("yes").onclick = function () {
+		gameElements.excelentSound.play();
 		gameElements.startGameDiv.className = gameElements.startGameDiv.className + " display-none";
 		gameElements.initGameDiv.className = "message";
+	}
+	document.getElementById("no").onclick = function () {
+		gameElements.fineSound.play();
+		gameElements.startGameDiv.className = gameElements.startGameDiv.className + " display-none";
+		gameElements.fineDiv.className = "message";
 	}
 	gameElements.inputName.onkeypress = function(e){
 		if (e.keyCode===13){
