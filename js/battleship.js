@@ -86,9 +86,11 @@ var model = {
 			if (index >= 0) {
 				ship.hits[index] = "hit"; 
 				view.displayHit(guess);
-				view.displayMessage("HIT!!!");
+				if (target=="computer")
+					view.displayMessage("HIT!!!");
 				if (this.isSunk(ship)){//check if the ship is sunk
-					view.displayMessage("You sunk my battleship");
+					if (target=="computer")
+						view.displayMessage("You sunk computer's battleship");
 					this.shipsSunk[ship.side]++; 
 					if (this.shipsSunk[ship.side] == 10) {
 						finishGame(ship.side);   //end of the game occurs when all ships dead
@@ -109,7 +111,8 @@ var model = {
 
 		}
 		view.displayMiss(guess);
-		view.displayMessage("You Missed ");
+/*		if (target=="computer")
+			view.displayMessage("You Missed ");*/
 		return false;
 	},
 	//cheks if ship is sunk
@@ -215,6 +218,7 @@ var controller = {
 
 		// playerGuess has event  listener onclick (click by player on the board cell) 
 	playerGuess:  function () {
+		view.displayMessage("Your turn...");
 		gameElements.playerName.className = "whos-turn";
 		gameElements.woprName.className = "";
 		var userTdElements = [];
@@ -239,6 +243,7 @@ var controller = {
 				if (!playerHit){
 					gameElements.playerName.className = "";
 					gameElements.woprName.className = "whos-turn";
+					view.displayMessage("You missed. Computer's turn...");
 					window.setTimeout(controller.computerGuess, 500);
 				}
 			}
@@ -257,7 +262,7 @@ var controller = {
 					if ((controller.computerShots.indexOf(controller.expectLocation.direction1[0]) >= 0) &&
 									((controller.expectLocation.direction1[1])? (controller.computerShots.indexOf(controller.expectLocation.direction1[1]) >= 0) : 1)) {
 						if (controller.choosenDirection==0){
-							return -1;
+							computerFires( -1 + "");
 						} else {
 							controller.direction=1;
 						}
@@ -269,7 +274,7 @@ var controller = {
 					if ((controller.computerShots.indexOf(controller.expectLocation.direction2[0]) >= 0) &&
 									((controller.expectLocation.direction2[1])? (controller.computerShots.indexOf(controller.expectLocation.direction2[1]) >= 0) : 1)) {
 						if (controller.choosenDirection==1){
-							return -1;
+							computerFires( -1 + "");
 						} 
 					}
 				} else {
@@ -285,47 +290,52 @@ var controller = {
 				}
 			} while ((controller.computerShots.indexOf(shot) >= 0));
 			controller.computerShots.push(shot); 
-			return shot + "";
+			computerFires( shot + "");
 		};
-
-		while (model.fire(hit = getLocation(), "player")) {
-			if (model.gameOver){
-				return false;
-			}
-			if (hit == (-1)){
-				hit = controller.injuredHits[switcher++];
-			}
-			controller.choosenDirection = controller.direction;
-			if (controller.injured) {
-				controller.injuredHits.push(hit);
-				hit = Number(hit);
-				if (hit%10 == 0) {
-					controller.expectLocation.direction1 = [hit + 1];
-				} else if (hit%10==9) {
-					controller.expectLocation.direction1 = [hit-1];
-				} else {
-					controller.expectLocation.direction1 = [hit + 1, hit-1];
+		function computerFires(hit){
+			if (model.fire(hit, "player")) {
+				if (model.gameOver){
+					return false;
 				}
-				if (hit - 210 < 0){
-					controller.expectLocation.direction2 = [hit + 10]
-				} else if (hit >= 290) {
-					controller.expectLocation.direction2 = [hit-10]
-				} else {
-					controller.expectLocation.direction2 = [hit-10, hit + 10]
+				if (hit == (-1)){
+					hit = controller.injuredHits[switcher++];
 				}
+				controller.choosenDirection = controller.direction;
+				if (controller.injured) {
+					controller.injuredHits.push(hit);
+					hit = Number(hit);
+					if (hit%10 == 0) {
+						controller.expectLocation.direction1 = [hit + 1];
+					} else if (hit%10==9) {
+						controller.expectLocation.direction1 = [hit-1];
+					} else {
+						controller.expectLocation.direction1 = [hit + 1, hit-1];
+					}
+					if (hit - 210 < 0){
+						controller.expectLocation.direction2 = [hit + 10]
+					} else if (hit >= 290) {
+						controller.expectLocation.direction2 = [hit-10]
+					} else {
+						controller.expectLocation.direction2 = [hit-10, hit + 10]
+					}
 
+				} else {
+					switcher=0;
+					controller.injuredHits = [];
+					controller.choosenDirection = -1;
+					controller.direction = -1;
+					controller.expectLocation = {
+						direction1: [],
+						direction2: []
+					}
+				};
+			setTimeout(getLocation, 500);
 			} else {
-				switcher=0;
-				controller.injuredHits = [];
-				controller.choosenDirection = -1;
-				controller.direction = -1;
-				controller.expectLocation = {
-					direction1: [],
-					direction2: []
-				}
-			};
-		}
-		controller.playerGuess();
+				controller.playerGuess();
+			}
+
+		};
+		getLocation();
 
 	}
 
