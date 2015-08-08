@@ -8,7 +8,6 @@ var view = {
 	displayMessage: function (msg) {
 		var messageArea = document.getElementById('messageArea');
 		messageArea.innerHTML = msg;
-		console.log(msg);
 	},
 	//displayHit and displayMiss takes location - string of numbers (for example "201"), 
 	//and marks cell on the boars (stylize table td)
@@ -40,6 +39,7 @@ var model = {
 		computer: 0
 	},
 	gameOver: false,
+	foundShips: [],
 
 	//ships objects stores two objects: a player and a computer, this objects store information about ships
 	//shipLengh - how many cell takes the ship
@@ -92,9 +92,12 @@ var model = {
 					this.shipsSunk[ship.side]++; 
 					if (this.shipsSunk[ship.side] == 10) {
 						finishGame(ship.side);   //end of the game occurs when all ships dead
+						console.log(ship.side);
 					}
 					if (ship.side == "player"){ // if ship is sunk then take off "injured" mark (for AI)
 						controller.injured = false;
+						model.foundShips = model.foundShips.concat(controller.injuredHits);
+						model.foundShips.push(guess);
 					}
 				} else {
 					if (ship.side == "player"){ // if ship is damaged, but not destroyed, then we put "injured" mark 
@@ -249,7 +252,6 @@ var controller = {
 		var getLocation = function() {
 			var shot;
 			do {
-				console.log("in getLocation controller.injured - "+ controller.injured + "controller.direction - " + controller.direction);
 				if (controller.injured && controller.direction != 1){
 					shot = controller.expectLocation.direction1[Math.floor(Math.random() * controller.expectLocation.direction1.length)];
 					if ((controller.computerShots.indexOf(controller.expectLocation.direction1[0]) >= 0) &&
@@ -260,16 +262,12 @@ var controller = {
 							controller.direction=1;
 						}
 					} else {
-						console.log("controller.direction=0;");
 						controller.direction=0;
 					}
-					// console.log(shot, controller.direction);
 				} else if (controller.injured && controller.direction==1){
 					shot = controller.expectLocation.direction2[Math.floor(Math.random() * controller.expectLocation.direction2.length)];
-					console.log(" controller.expectLocation.direction2 " +  controller.expectLocation.direction2);
 					if ((controller.computerShots.indexOf(controller.expectLocation.direction2[0]) >= 0) &&
 									((controller.expectLocation.direction2[1])? (controller.computerShots.indexOf(controller.expectLocation.direction2[1]) >= 0) : 1)) {
-						console.log("if (controller.computerShots.indexOf((controller.expectLocation.direction2 ");
 						if (controller.choosenDirection==1){
 							return -1;
 						} 
@@ -277,13 +275,23 @@ var controller = {
 				} else {
 					shot = Math.floor(Math.random() * 100 + 200);
 				}
-			} while (controller.computerShots.indexOf(shot) >= 0);
-			controller.computerShots.push(shot);
+				if((model.foundShips.indexOf(shot + 1 + "")>=0) || 
+					(model.foundShips.indexOf(shot - 1 + "")>=0) || (model.foundShips.indexOf(shot + 10 + "")>=0) || 
+					(model.foundShips.indexOf(shot-10 + "")>=0) || (model.foundShips.indexOf(shot + 9 + "")>=0) || 
+					(model.foundShips.indexOf(shot-9 + "")>=0) || (model.foundShips.indexOf(shot + 11 + "")>=0) || 
+					(model.foundShips.indexOf(shot - 11 + "")>=0)){
+					controller.computerShots.push(shot);
+					continue;
+				}
+			} while ((controller.computerShots.indexOf(shot) >= 0));
+			controller.computerShots.push(shot); 
 			return shot + "";
 		};
 
 		while (model.fire(hit = getLocation(), "player")) {
-			console.log("controller.injured " + controller.injured);
+			if (model.gameOver){
+				return false;
+			}
 			if (hit == (-1)){
 				hit = controller.injuredHits[switcher++];
 			}
@@ -306,7 +314,6 @@ var controller = {
 					controller.expectLocation.direction2 = [hit-10, hit + 10]
 				}
 
-				console.log(controller.expectLocation, controller.direction);
 			} else {
 				switcher=0;
 				controller.injuredHits = [];
@@ -369,11 +376,12 @@ function startGame () {
 //shows open fields and reset button and 
 //says to you, who you are )))
 function finishGame(looser) {
+	console.log(looser);
 	model.gameOver = true;
-	if (looser=="player"){
-		view.displayMessage("You loose");
-	} else {
+	if (looser == "computer"){
 		view.displayMessage("You win!");
+	} else {
+		view.displayMessage("You loose!");
 	}
 	for (var i = 100 ; i < 300; i++) {
 	 document.getElementById(i + "").className="";
